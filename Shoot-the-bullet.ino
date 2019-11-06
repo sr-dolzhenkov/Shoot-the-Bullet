@@ -11,11 +11,16 @@ Field Field;
 
 void setup() {
   pinMode(UP, INPUT_PULLUP);
+  digitalWrite(UP, HIGH);
   pinMode(RIGHT, INPUT_PULLUP);
+  digitalWrite(RIGHT, HIGH);
   pinMode(DOWN, INPUT_PULLUP);
+  digitalWrite(DOWN, HIGH);
   pinMode(LEFT, INPUT_PULLUP);
+  digitalWrite(LEFT, HIGH);
 
-  //вывод статических элиментов
+  
+
 
   Serial.begin(115200);
 }
@@ -23,10 +28,45 @@ void setup() {
 void loop() {
   
   //ввод данных
-  //вывод динамических данных
-  Field.flightShells();
-  
-  Field.fallingRow();
+  for (int i = 2; i < 6; i++) {
+    if (digitalRead(i) == LOW) {
+      input(i);
+    }
+  }
 
-  delay(1000);
+  //выввод данных
+  output();
+  
+  delay(250);
+  Field.flightShells();
+  delay(250);
+  Field.flightShells();
+  delay(250);
+  Field.flightShells();
+  delay(250);
+  Field.flightShells();
+  Field.fallingRow();
+}
+
+void input(int buttonNumber) {
+  switch (buttonNumber){
+    case 2:
+      Field.createShell(Player.getX());
+      delay(250);
+      break;
+    case 3:
+      Player.moveRight();
+      delay(250);
+      break;
+    case 4:
+      Player.moveLeft();
+      delay(250);
+      break;
+    case 5:
+      break;
+  }
+}
+
+void output() {
+  
 }
