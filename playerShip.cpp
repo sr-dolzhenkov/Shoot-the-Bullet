@@ -24,10 +24,14 @@ void playerShip::moveRight() {
   }
 }
 
-int playerShip::getX() {
+void playerShip::newGame() {
+  x = 5;
+}
+
+const int playerShip::getX() {
   return x;
 }
 
-int playerShip::getY() {
+const int playerShip::getY() {
   return y;
 }
