@@ -29,21 +29,22 @@ void setup() {
   pinMode(LEFT_PIN, INPUT_PULLUP);
   digitalWrite(LEFT_PIN, HIGH);
 
-  LCD.InitLCD();  
+  LCD.InitLCD();
 
   Serial.begin(115200);
 }
 
 void loop() {
   
-  //ввод данных
+  //ввод данных, если есть сигнал, то обрабатываем его
   for (int i = 2; i < 6; i++) {
     if (digitalRead(i) == LOW) {
       input(i);
     }
   }
 
-  //выввод данных и не только
+  //каждую четверть секунды происходит выввод данных и полёт снарядов
+  //каждую секунду опускается ряды
   output();
   delay(250);
   Field.flightShells();
@@ -80,7 +81,7 @@ void input(int buttonNumber) {
       break;
   }
 }
-
+//если состояние игры не проигрышь, то рисуем соответсвующие элименты, иначе выводим информацию о проигрыше
 void output() {
   if (!(Field.getLoseTrigger())) {
     LCD.disableSleep();
@@ -110,6 +111,8 @@ void output() {
     LCD.disableSleep();
     LCD.clrScr();
     LCD.print("GAME OVER", CENTER, 0);
+    LCD.print("POINTS", CENTER, 8);
+    LCD.print(Field.getPoints(), CENTER, 16);
     LCD.enableSleep();
   }
 }
