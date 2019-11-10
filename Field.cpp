@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include "Field.h"
 
 Field::Field() {
@@ -35,17 +37,16 @@ void Field::deleteShell(int pos) {
 }
 
 void Field::createRow() {
+  srand(time(NULL));
   int t = 0;
   for (int j = 0; j < width - 2; j++) {
-    //dataRows[0][j] = random(2);
-    dataRows[0][j] = 1;
+    dataRows[0][j] = random() % 2;
     if (dataRows[0][j] == 1) {
       t++;
     }
   }
   if (t == width - 2) {
-    //dataRows[0][random(18)] = 0;
-    dataRows[0][0] = 0;
+    dataRows[0][random() % 18] = 0;
   }
 }
 
