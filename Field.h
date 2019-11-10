@@ -17,14 +17,20 @@ public:
   void lose();
   void newGame();
 
-  const int* getDataShells();
-  const bool* getDataRows();
+  const int getDataShellsX(int _i);
+  const int getDataShellsY(int _i);
+  const bool getDataRows(int _x, int _y);
+  const int getPoints();
+  const bool getLoseTrigger();
 
 private:
   const static int width = 13;
   const static int height = 20;
 
-  //bool field [height][width];//???
   int dataShells[height - 2][2];
   bool dataRows[height - 2][width - 2];
+
+  int points;
+
+  bool loseTrigger;
 };
