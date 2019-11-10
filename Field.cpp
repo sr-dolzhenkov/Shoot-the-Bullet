@@ -21,6 +21,7 @@ Field::Field() {
 
 Field::~Field() {}
 
+//ищем свободный ряд(пустые с координатами -1, -1), кода находи записываем туда соотвествющие координаты снаряда
 void Field::createShell(int _x) {
   for (int i = 0; i < height - 2; i++) {
     if (dataShells[i][0] == 0) {
@@ -36,6 +37,7 @@ void Field::deleteShell(int pos) {
   dataShells[pos][1] = -1;
 }
 
+//генерация происходит путём руандомизации, также проверяем не полная ли строка получилась, иначе делаём пропуск.  
 void Field::createRow() {
   srand(time(NULL));
   int t = 0;
@@ -46,10 +48,11 @@ void Field::createRow() {
     }
   }
   if (t == width - 2) {
-    dataRows[0][random() % 18] = 0;
+    dataRows[0][random() % 18] = false;
   }
 }
 
+//в нижний ряд записываем верхний(двигаемся с низу вверх), потом создаем строку на 1 ряду, а такжн проверяем не проирал ли игрок
 void Field::fallingRow() {
   for (int i = height - 3; i > 0; i--) {
     for (int j = 0; j < width - 2; j++) {
@@ -63,17 +66,20 @@ void Field::fallingRow() {
   }
 }
 
+//зануляем строку соотвествующию строку, такце виличиваем счётчик очков на 1
 void Field::deleteRow(int _y) {
   for (int j = 0; j < width - 2; j++) {
-    dataRows[_y][j] = 0;
+    dataRows[_y][j] = false;
   }
   points++;
 }
 
+//проверяем нет ли блока в ряду выше 
 bool Field::checkCollision(int _x, int _y) {
-  return (dataRows[--_y][_x] == 1);
+  return (dataRows[--_y][_x] == true);
 }
 
+//полёт осуществляется путём уменьшения координаты y, а также проверяем не было ди столкновения, иначе удаляем снаряд и добавляем блок в ряд, и проверяем не полный ли ряд, очищаем его
 void Field::flightShells() {
   for (int i = 0; i < height - 2; i++) {
     if (dataShells[i][0] != -1) {
@@ -93,6 +99,7 @@ void Field::changeRow(int _x, int _y) {
   dataRows[_y][_x] = 1;
 }
 
+//не полная ли строка
 bool Field::checkRow(int _y) {
   bool t = true;
   for (int j = 0; j < width - 2; j++) {
@@ -104,6 +111,7 @@ bool Field::checkRow(int _y) {
   return t;
 }
 
+//проверяем не пустая ли нижняя строка
 bool Field::checkLose() {
   bool t = false;
   for (int j = 0; j < width - 2; j++) {
