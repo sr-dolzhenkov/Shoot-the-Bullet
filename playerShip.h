@@ -6,9 +6,10 @@ public:
   ~playerShip();
   void moveLeft();
   void moveRight();
+  void newGame();//перемещаем все элименты в начальное состояние
 
-  int getX();
-  int getY();
+  const int getX();
+  const int getY();
 
 private:
   int x;
