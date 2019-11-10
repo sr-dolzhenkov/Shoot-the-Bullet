@@ -1,16 +1,6 @@
 #include "Field.h"
 
 Field::Field() {
-  /*for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      if ((i == 0) || (j == 0) || (i == (height - 1)) || (j == (width - 1))) {
-        field[i][j] = true;
-      }
-      else
-        field[i][j] = false;
-    }
-  }*/
-
   for (int i = 0; i < height - 2; i++) {
     for (int j = 0; j < width - 2; j++) {
       dataRows[i][j] = false;
@@ -21,6 +11,10 @@ Field::Field() {
     dataShells[i][0] = -1;
     dataShells[i][1] = -1;
   }
+
+  points = 0;
+
+  loseTrigger = false;
 }
 
 Field::~Field() {}
@@ -43,13 +37,15 @@ void Field::deleteShell(int pos) {
 void Field::createRow() {
   int t = 0;
   for (int j = 0; j < width - 2; j++) {
-    dataRows[0][j] = random(2);
+    //dataRows[0][j] = random(2);
+    dataRows[0][j] = 1;
     if (dataRows[0][j] == 1) {
       t++;
     }
   }
   if (t == width - 2) {
-    dataRows[0][random(18)] = 0;
+    //dataRows[0][random(18)] = 0;
+    dataRows[0][0] = 0;
   }
 }
 
@@ -70,6 +66,7 @@ void Field::deleteRow(int _y) {
   for (int j = 0; j < width - 2; j++) {
     dataRows[_y][j] = 0;
   }
+  points++;
 }
 
 bool Field::checkCollision(int _x, int _y) {
@@ -118,17 +115,39 @@ bool Field::checkLose() {
 }
 
 void Field::lose() {
-
+  loseTrigger = true;
 }
 
 void Field::newGame() {
-
+  for (int i = 0; i < height - 2; i++) {
+    for (int j = 0; j < width - 2; j++) {
+      dataRows[i][j] = false;
+    }
+  }
+  for (int i = 0; i < height - 2; i++) {
+    dataShells[i][0] = -1;
+    dataShells[i][1] = -1;
+  }
+  points = 0;
+  loseTrigger = false;
 }
 
-const int* Field::getDataShells() {
-  return *dataShells;
+const int Field::getDataShellsX(int _i) {
+  return dataShells[_i][0];
 }
 
-const bool* Field::getDataRows() {
-  return *dataRows;
+const int Field::getDataShellsY(int _i) {
+  return dataShells[_i][1];
+}
+
+const bool Field::getDataRows(int _x, int _y) {
+  return dataRows[_x][_y];
+}
+
+const int Field::getPoints() {
+  return points;
+}
+
+const bool Field::getLoseTrigger() {
+  return loseTrigger;
 }
