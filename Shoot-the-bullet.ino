@@ -43,15 +43,17 @@ void loop() {
     }
   }
 
-  //выввод данных
+  //выввод данных и не только
   output();
-  
   delay(250);
   Field.flightShells();
+  output();
   delay(250);
   Field.flightShells();
+  output();
   delay(250);
   Field.flightShells();
+  output();
   delay(250);
   Field.flightShells();
   Field.fallingRow();
