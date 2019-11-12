@@ -24,9 +24,9 @@ Field::~Field() {}
 //ищем свободный ряд(пустые с координатами -1, -1), кода находи записываем туда соотвествющие координаты снаряда
 void Field::createShell(int _x) {
   for (int i = 0; i < height - 2; i++) {
-    if (dataShells[i][0] == 0) {
+    if (dataShells[i][0] == -1) {
       dataShells[i][0] = _x;
-      dataShells[i][1] = height - 4;
+      dataShells[i][1] = height - 2;
       break;
     }
   }
@@ -85,25 +85,25 @@ void Field::flightShells() {
     if (dataShells[i][0] != -1) {
       dataShells[i][1]--;
       if ((checkCollision(dataShells[i][0], dataShells[i][1])) || (dataShells[i][1] == 0)) {
-        deleteShell(i);
         changeRow(dataShells[i][0], dataShells[i][1]);
         if (checkRow(dataShells[i][1])) {
           deleteRow(dataShells[i][1]);
         }
+        deleteShell(i);
       }
     }
   }
 }
 
 void Field::changeRow(int _x, int _y) {
-  dataRows[_y][_x] = 1;
+  dataRows[_y][_x] = true;
 }
 
 //не полная ли строка
 bool Field::checkRow(int _y) {
   bool t = true;
   for (int j = 0; j < width - 2; j++) {
-    if (dataRows[_y][j] == 0) {
+    if (dataRows[_y][j] == false) {
       t = false;
       break;
     }
