@@ -8,7 +8,9 @@
 #define DOWN_PIN 4
 #define LEFT_PIN 5
 
-LCD5110 LCD(9, 10, 11, 12, 13);
+LCD5110 LCD(9, 10, 11, 13, 12);
+
+extern unsigned char SmallFont[];
 
 playerShip Player;
 Field Field;
@@ -20,6 +22,11 @@ const int width = 13;
 const int height = 20;
 
 void setup() {
+  pinMode(7, OUTPUT);
+  digitalWrite(7, LOW);
+
+  
+  
   pinMode(UP_PIN, INPUT_PULLUP);
   digitalWrite(UP_PIN, HIGH);
   pinMode(RIGHT_PIN, INPUT_PULLUP);
@@ -31,32 +38,27 @@ void setup() {
 
   LCD.InitLCD();
 
+  LCD.setFont(SmallFont);
+
   Serial.begin(115200);
 }
 
 void loop() {
   
   //ввод данных, если есть сигнал, то обрабатываем его
-  for (int i = 2; i < 6; i++) {
-    if (digitalRead(i) == LOW) {
-      input(i);
-    }
-  }
-
   //каждую четверть секунды происходит выввод данных и полёт снарядов
   //каждую секунду опускается ряды
-  output();
-  delay(250);
-  Field.flightShells();
-  output();
-  delay(250);
-  Field.flightShells();
-  output();
-  delay(250);
-  Field.flightShells();
-  output();
-  delay(250);
-  Field.flightShells();
+  for (int i = 0; i < 4; i++) {
+    output();
+    for (int i = 2; i < 6; i++) {
+      if (digitalRead(i) == LOW) {
+       input(i);
+      }
+    }
+    delay(250);
+    Field.flightShells();
+  }
+  
   Field.fallingRow();
 }
 
@@ -64,55 +66,48 @@ void input(int buttonNumber) {
   switch (buttonNumber){
     case 2:
       Field.createShell(Player.getX());
-      delay(250);
       break;
     case 3:
       Player.moveRight();
-      delay(250);
       break;
     case 4:
-      Player.moveLeft();
-      delay(250);
-      break;
-    case 5:
       Field.newGame();
       Player.newGame();
-      delay(250);
+      break;
+    case 5:
+      Player.moveLeft();
       break;
   }
 }
 //если состояние игры не проигрышь, то рисуем соответсвующие элименты, иначе выводим информацию о проигрыше
 void output() {
   if (!(Field.getLoseTrigger())) {
-    LCD.disableSleep();
     LCD.clrScr();
 
     LCD.drawRect(0, 0, 12, 19);
-    LCD.setPixel(Player.getX(), Player.getY());
+    LCD.setPixel(Player.getX() + 1, Player.getY() + 1);
     for (int i = 0; i < height - 2; i++) {
       for (int j = 0; j < width - 2; j++) {
         if (Field.getDataRows(i, j)) {
-          LCD.setPixel(i + 1, j + 1);
+          LCD.setPixel(j + 1, i + 1);
         }
       }
     }
     for (int i = 0; i < height - 2; i++) {
       if (Field.getDataShellsX(i) != -1) {
-        LCD.setPixel(Field.getDataShellsX(i), Field.getDataShellsY(i));
+        LCD.setPixel(Field.getDataShellsX(i) + 1, Field.getDataShellsY(i) + 1);
       }
     }
-    LCD.update();
     
-    LCD.print("POINTS", 14, 0);
-    LCD.printNumI(Field.getPoints(), 14, 8);
-    LCD.enableSleep();
+    LCD.print("POINTS", RIGHT, 0);
+    LCD.printNumI(Field.getPoints(), RIGHT, 8);
+    LCD.update();
   }
   else {
-    LCD.disableSleep();
     LCD.clrScr();
     LCD.print("GAME OVER", CENTER, 0);
     LCD.print("POINTS", CENTER, 8);
-    LCD.print(Field.getPoints(), CENTER, 16);
-    LCD.enableSleep();
+    LCD.printNumI(Field.getPoints(), CENTER, 16);
+    LCD.update();
   }
 }
