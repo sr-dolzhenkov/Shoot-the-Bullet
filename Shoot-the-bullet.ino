@@ -8,7 +8,8 @@
 #define DOWN_PIN 4
 #define LEFT_PIN 5
 
-LCD5110 LCD(9, 10, 11, 13, 12);
+//LCD5110 LCD(9, 10, 11, 13, 12);
+LCD5110 LCD(9, 10, 11, 12, 13);
 
 extern unsigned char SmallFont[];
 
@@ -21,11 +22,11 @@ void output();
 const int width = 13;
 const int height = 20;
 
-void setup() {
-  pinMode(7, OUTPUT);
-  digitalWrite(7, LOW);
+const int sizeField = 2;
 
-  
+void setup() {
+  //pinMode(7, OUTPUT);
+  //digitalWrite(7, LOW);  
   
   pinMode(UP_PIN, INPUT_PULLUP);
   digitalWrite(UP_PIN, HIGH);
@@ -48,14 +49,14 @@ void loop() {
   //ввод данных, если есть сигнал, то обрабатываем его
   //каждую четверть секунды происходит выввод данных и полёт снарядов
   //каждую секунду опускается ряды
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 20; i++) {
     output();
     for (int i = 2; i < 6; i++) {
       if (digitalRead(i) == LOW) {
        input(i);
       }
     }
-    delay(250);
+    delay(150);
     Field.flightShells();
   }
   
@@ -83,19 +84,30 @@ void input(int buttonNumber) {
 void output() {
   if (!(Field.getLoseTrigger())) {
     LCD.clrScr();
-
-    LCD.drawRect(0, 0, 12, 19);
-    LCD.setPixel(Player.getX() + 1, Player.getY() + 1);
+    LCD.drawRect(0, 0, 11 * sizeField + 1, 18 * sizeField + 1);
+    for (int i = 0; i < sizeField; i++) {
+      for (int j = 0; j < sizeField; j++) {
+        LCD.setPixel(Player.getX() * sizeField + 1 + i, Player.getY() * sizeField + 1 + j);
+      }
+    }
     for (int i = 0; i < height - 2; i++) {
       for (int j = 0; j < width - 2; j++) {
         if (Field.getDataRows(i, j)) {
-          LCD.setPixel(j + 1, i + 1);
+          for (int _i = 0; _i < sizeField; _i++) {
+            for (int _j = 0; _j < sizeField; _j++) {
+              LCD.setPixel(j * sizeField + 1 + _j, i * sizeField + 1 + _i);
+            }
+          }
         }
       }
     }
     for (int i = 0; i < height - 2; i++) {
       if (Field.getDataShellsX(i) != -1) {
-        LCD.setPixel(Field.getDataShellsX(i) + 1, Field.getDataShellsY(i) + 1);
+        for (int _i = 0; _i < sizeField; _i++) {
+          for (int _j = 0; _j < sizeField; _j++) {
+            LCD.setPixel(Field.getDataShellsX(i) * sizeField + 1 + _i, Field.getDataShellsY(i) * sizeField + 1 + _j);
+          }
+        }
       }
     }
     
