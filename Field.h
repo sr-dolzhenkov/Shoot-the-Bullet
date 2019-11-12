@@ -16,6 +16,7 @@ public:
   bool checkLose();//проверяе не дошли ли строка до игрока
   void lose();//меняем состояние игры на проигрышь
   void newGame();//перемещаем все элименты в начальное состояние
+  void rewriteRows(int _y);
 
   const int getDataShellsX(int _i);
   const int getDataShellsY(int _i);
