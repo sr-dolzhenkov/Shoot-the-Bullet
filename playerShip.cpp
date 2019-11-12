@@ -7,20 +7,20 @@ playerShip::playerShip() {
 playerShip::~playerShip() {}
 
 void playerShip::moveLeft() {
-  if (x > 1) {
+  if (x > 0) {
     x--;
   }
   else {
-    x = 11;
+    x = 10;
   }
 }
 
 void playerShip::moveRight() {
-  if (x < 11) {
+  if (x < 10) {
     x++;
   }
   else {
-    x = 1;
+    x = 0;
   }
 }
 
