@@ -88,6 +88,7 @@ void Field::flightShells() {
         changeRow(dataShells[i][0], dataShells[i][1]);
         if (checkRow(dataShells[i][1])) {
           deleteRow(dataShells[i][1]);
+          rewriteRows(dataShells[i][1]);
         }
         deleteShell(i);
       }
@@ -139,6 +140,14 @@ void Field::newGame() {
   }
   points = 0;
   loseTrigger = false;
+}
+
+void Field::rewriteRows(int _y) {
+  for (int i = _y; i < height - 3; i++) {
+    for (int j = 0; j < width - 2; j++) {
+      dataRows[i][j] = dataRows[i + 1][j];
+    }
+  }
 }
 
 const int Field::getDataShellsX(int _i) {
