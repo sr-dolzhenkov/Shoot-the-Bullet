@@ -1,5 +1,7 @@
 #include <LCD5110_Graph.h>
 
+#include "string.h"
+
 #include "Field.h"
 #include "playerShip.h"
 
@@ -22,7 +24,8 @@ void output();
 const int width = 13;
 const int height = 20;
 
-const int sizeField = 2;
+//const int sizeField = 2;
+int sizeField;
 
 void setup() {
   //pinMode(7, OUTPUT);
@@ -45,44 +48,132 @@ void setup() {
 }
 
 void loop() {
-  
+  if (Field.getMenuTrigger()) {
+    for (int i = 2; i < 6; i++) {
+      if (digitalRead(i) == LOW) {
+        input(i);
+      }
+    }
+    output();
+    delay(150);
+  }
   //ввод данных, если есть сигнал, то обрабатываем его
   //каждую четверть секунды происходит выввод данных и полёт снарядов
   //каждую секунду опускается ряды
-  for (int i = 0; i < 20; i++) {
-    output();
+  else if (Field.getGameTrigger()) {
+    for (int i = 0; i < 40 - Field.getDifficulty() * 10; i++) {
+      output();
+      for (int i = 2; i < 6; i++) {
+        if (digitalRead(i) == LOW) {
+          input(i);
+        }
+      }
+      delay(75);
+      Field.flightShells();
+      delay(75);
+    }
+    Field.fallingRow();
+    
+  }
+  else if (Field.getLoseTrigger()) {
     for (int i = 2; i < 6; i++) {
       if (digitalRead(i) == LOW) {
-       input(i);
+        input(i);
       }
     }
-    delay(150);
-    Field.flightShells();
+    output();
+    delay(250);
   }
-  
-  Field.fallingRow();
+  else if (Field.getTabTrigger()) {
+    
+  }
 }
 
 void input(int buttonNumber) {
-  switch (buttonNumber){
-    case 2:
-      Field.createShell(Player.getX());
-      break;
-    case 3:
-      Player.moveRight();
-      break;
-    case 4:
-      Field.newGame();
-      Player.newGame();
-      break;
-    case 5:
-      Player.moveLeft();
-      break;
+  if (Field.getMenuTrigger()) {
+    switch (buttonNumber){
+     case 2:
+       Field.minusMenuState();
+       break;
+     case 3:
+       if (Field.getMenuState() == 0) { 
+         Field.newGame();
+         Player.newGame();
+       }
+       else if ((Field.getMenuState() == 1) && (Field.getGameState())) {
+         Field.toGame(); 
+       }
+       else if ((Field.getMenuState() == 2)) {
+         Field.plusDifficulty(); 
+       }
+       else if ((Field.getMenuState() == 3)) {
+         Field.plusSizeField(); 
+       }
+       break;
+     case 4:
+       Field.plusMenuState();
+       break;
+    }
+  }
+  else if (Field.getGameTrigger()) {
+    switch (buttonNumber){
+     case 2:
+       Field.createShell(Player.getX());
+       break;
+     case 3:
+        Player.moveRight();
+       break;
+     case 4:
+       Field.toMenu();
+       break;
+      case 5:
+        Player.moveLeft();
+        break;
+    }
+  }
+  else if (Field.getLoseTrigger()) {
+    switch (buttonNumber){
+     case 2:
+       Field.minusName(Field.getLoseState());
+       break;
+     case 3:
+     //Right/select
+       if ((Field.getLoseState() == 0) || (Field.getLoseState() == 1)) {
+         Field.plusLoseState();
+       }
+       else if (Field.getLoseState() == 2) {
+         Field.toMenu();
+       }
+       break;
+     case 4:
+       Field.plusName(Field.getLoseState());
+       break;
+    }
+  }
+  else if (Field.getTabTrigger()) {
+    switch (buttonNumber){
+     case 4:
+     //toMenu
+       break;
+    }
   }
 }
 //если состояние игры не проигрышь, то рисуем соответсвующие элименты, иначе выводим информацию о проигрыше
 void output() {
-  if (!(Field.getLoseTrigger())) {
+  if (Field.getMenuTrigger()) {
+    LCD.clrScr();
+    LCD.print("NEW GAME", LEFT + 8, 0);
+    LCD.print("CONTINUE", LEFT + 8, 8);
+    LCD.print("DIFFICULTY", LEFT + 8, 16);
+    LCD.printNumI(Field.getDifficulty(), RIGHT, 16);
+    LCD.print("SIZE", LEFT + 8, 24);
+    LCD.printNumI(Field.getSizeField(), RIGHT, 24);
+    LCD.print("TAB", LEFT + 8, 32);
+    LCD.drawRect(0, 8 * Field.getMenuState(), 7, 8 * Field.getMenuState() + 6);
+    LCD.update();
+  }
+  else if (Field.getGameTrigger()) {
+    sizeField = Field.getSizeField();
     LCD.clrScr();
     LCD.drawRect(0, 0, 11 * sizeField + 1, 18 * sizeField + 1);
     for (int i = 0; i < sizeField; i++) {
@@ -115,11 +206,16 @@ void output() {
     LCD.printNumI(Field.getPoints(), RIGHT, 8);
     LCD.update();
   }
-  else {
+  else if (Field.getLoseTrigger()) {
     LCD.clrScr();
     LCD.print("GAME OVER", CENTER, 0);
     LCD.print("POINTS", CENTER, 8);
     LCD.printNumI(Field.getPoints(), CENTER, 16);
+    LCD.print(String(Field.getName(0)) + String(Field.getName(1)) + String(Field.getName(2)), CENTER, 24);
+    LCD.drawLine(34 + Field.getLoseState() * 6, 32, 39 + Field.getLoseState() * 6, 32);
     LCD.update();
+  }
+  else if (Field.getTabTrigger()) {
+    
   }
 }
