@@ -1,4 +1,5 @@
 #include <time.h>
+#include "string.h"
 
 #include "Field.h"
 
@@ -17,6 +18,20 @@ Field::Field() {
   points = 0;
 
   loseTrigger = false;
+  menuTrigger = true;
+  gameTrigger = false;
+  tabTrigger = false;
+  gameState = false;
+
+  sizeField = 2;
+  difficulty = 1;
+
+  menuState = 0;
+  loseState = 0;
+
+  Name[0] = 65;
+  Name[1] = 65;
+  Name[2] = 65;
 }
 
 Field::~Field() {}
@@ -92,6 +107,9 @@ void Field::flightShells() {
         }
         deleteShell(i);
       }
+      if (checkLose()) {
+        lose();
+      }
     }
   }
 }
@@ -125,7 +143,13 @@ bool Field::checkLose() {
 }
 
 void Field::lose() {
+  gameTrigger = false;
   loseTrigger = true;
+  gameState = false;
+  loseState = 0;
+  Name[0] = 65;
+  Name[1] = 65;
+  Name[2] = 65;
 }
 
 void Field::newGame() {
@@ -139,7 +163,9 @@ void Field::newGame() {
     dataShells[i][1] = -1;
   }
   points = 0;
-  loseTrigger = false;
+  menuTrigger = false;
+  gameTrigger = true;
+  gameState = true;
 }
 
 void Field::rewriteRows(int _y) {
@@ -147,6 +173,62 @@ void Field::rewriteRows(int _y) {
     for (int j = 0; j < width - 2; j++) {
       dataRows[i][j] = dataRows[i + 1][j];
     }
+  }
+}
+
+void Field::toMenu() {
+  loseTrigger = false;
+  menuTrigger = true;
+}
+
+void Field::plusMenuState() {
+  ++menuState;
+  if (menuState > 4) {
+    menuState = 0;
+  }
+}
+
+void Field::minusMenuState() {
+  --menuState;
+  if (menuState < 0) {
+    menuState = 4;
+  }
+}
+
+void Field::toGame() {
+  menuTrigger = false;
+  gameTrigger = true;
+}
+
+void Field::plusSizeField() {
+  ++sizeField;
+  if (sizeField > 2) {
+    sizeField = 1;
+  }
+}
+
+void Field::plusDifficulty() {
+  ++difficulty;
+   if (difficulty > 3) {
+    difficulty = 1;
+  }
+}
+
+void Field::plusLoseState() {
+  ++loseState;
+}
+
+void Field::plusName(int i) {
+  ++Name[i];
+  if (Name[i] > 90) {
+    Name[i] = 65;
+  }
+}
+
+void Field::minusName(int i) {
+  --Name[i];
+  if (Name[i] < 65) {
+    Name[i] = 90;
   }
 }
 
@@ -168,4 +250,40 @@ const int Field::getPoints() {
 
 const bool Field::getLoseTrigger() {
   return loseTrigger;
+}
+
+const bool Field::getMenuTrigger() {
+  return menuTrigger;
+}
+
+const bool Field::getGameTrigger() {
+  return gameTrigger;
+}
+
+const bool Field::getTabTrigger() {
+  return tabTrigger;
+}
+
+const int Field::getSizeField() {
+  return sizeField;
+}
+
+const int Field::getDifficulty() {
+  return difficulty;
+}
+
+const int Field::getMenuState() {
+  return menuState;
+}
+
+const bool Field::getGameState() {
+  return gameState;
+}
+
+const int Field::getLoseState() {
+  return loseState;
+}
+
+const char Field::getName(int i) {
+  return Name[i];
 }
