@@ -17,12 +17,30 @@ public:
   void lose();//меняем состояние игры на проигрышь
   void newGame();//перемещаем все элименты в начальное состояние
   void rewriteRows(int _y);
+  void toMenu();
+  void minusMenuState();
+  void plusMenuState();
+  void toGame();
+  void plusSizeField();
+  void plusDifficulty();
+  void plusLoseState();
+  void plusName(int i);
+  void minusName(int i);
 
   const int getDataShellsX(int _i);
   const int getDataShellsY(int _i);
   const bool getDataRows(int _x, int _y);
   const int getPoints();
   const bool getLoseTrigger();
+  const bool getMenuTrigger();
+  const bool getGameTrigger();
+  const bool getTabTrigger();
+  const int getSizeField();
+  const int getDifficulty();
+  const int getMenuState();
+  const bool getGameState();
+  const int getLoseState();
+  const char getName(int i);
 
 private:
   const static int width = 13;
@@ -34,4 +52,16 @@ private:
   int points;//очки ирока
 
   bool loseTrigger;//состояние игры
+  bool menuTrigger;
+  bool gameTrigger;
+  bool tabTrigger;
+  bool gameState;
+
+  int sizeField;
+  int difficulty;
+
+  int menuState;
+  int loseState;
+
+  char Name[3];
 };
