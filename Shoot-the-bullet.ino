@@ -51,13 +51,14 @@ void loop() {
 //ввод данных, если есть сигнал, то обрабатываем его
   label:
   if (Field.getMenuTrigger()) {
+    delay(200);
     for (int i = 2; i < 6; i++) {
       if (digitalRead(i) == LOW) {
         input(i);
       }
     }
     output();
-    delay(150);
+    delay(50);
   }
   //каждые 150 мс выввод данных и полёт снарядов
   //каждые 4.5 с опускается ряды на первой сложности
@@ -79,22 +80,24 @@ void loop() {
     Field.fallingRow();
   }
   else if (Field.getLoseTrigger()) {
+    delay(200);
     for (int i = 2; i < 6; i++) {
       if (digitalRead(i) == LOW) {
         input(i);
       }
     }
     output();
-    delay(150);
+    delay(50);
   }
   else if (Field.getTabTrigger()) {
+    delay(200);
     for (int i = 2; i < 6; i++) {
       if (digitalRead(i) == LOW) {
         input(i);
       }
     }
     output();
-    delay(150);
+    delay(50);
   }
 }
 //смотрим состояние игры - рисуем соответсвующие элементы
