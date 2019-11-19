@@ -1,4 +1,5 @@
-#include <LCD5110_Graph.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_PCD8544.h>
 
 #include "string.h"
 
@@ -10,10 +11,7 @@
 #define DOWN_PIN 4
 #define LEFT_PIN 5
 
-//LCD5110 LCD(9, 10, 11, 13, 12);
-LCD5110 LCD(9, 10, 11, 12, 13);
-
-extern unsigned char SmallFont[];
+Adafruit_PCD8544 display = Adafruit_PCD8544(9, 10, 11, 12, 13);
 
 playerShip Player;
 Field Field;
@@ -28,8 +26,8 @@ int sizeField;
 bool t = false;
 
 void setup() {
-  //pinMode(7, OUTPUT);
-  //digitalWrite(7, LOW);  
+  pinMode(7, OUTPUT);
+  digitalWrite(7, LOW);  
   
   pinMode(UP_PIN, INPUT_PULLUP);
   digitalWrite(UP_PIN, HIGH);
@@ -40,12 +38,14 @@ void setup() {
   pinMode(LEFT_PIN, INPUT_PULLUP);
   digitalWrite(LEFT_PIN, HIGH);
 
-  LCD.InitLCD();
-
-  LCD.setFont(SmallFont);
+  display.begin();
+  display.setContrast(50);
+  display.setTextColor(BLACK);
+  display.setTextSize(1);
 
   Serial.begin(115200);
 }
+
 
 void loop() {
 //ввод данных, если есть сигнал, то обрабатываем его
@@ -55,15 +55,15 @@ void loop() {
     for (int i = 2; i < 6; i++) {
       if (digitalRead(i) == LOW) {
         input(i);
+        delay(200);
       }
     }
     output();
-    delay(50);
   }
   //каждые 150 мс выввод данных и полёт снарядов
   //каждые 4.5 с опускается ряды на первой сложности
   else if (Field.getGameTrigger()) {
-    for (int h = 0; h < 40 - Field.getDifficulty() * 10; h++) {
+    for (int h = 0; h < 50 - Field.getDifficulty() * 5; h++) {
       output();
       for (int i = 2; i < 6; i++) {
         if (digitalRead(i) == LOW) {
@@ -74,7 +74,7 @@ void loop() {
           }
         }
       }
-      delay(150);
+      delay(200);
       Field.flightShells();
     }
     Field.fallingRow();
@@ -132,17 +132,17 @@ void input(int buttonNumber) {
   }
   else if (Field.getGameTrigger()) {
     switch (buttonNumber){
-     case 2:
+     case 5:
        Field.createShell(Player.getX());
        break;
-     case 3:
+     case 2:
        Player.moveRight();
        break;
-     case 4:
+     case 3:
        Field.toMenu();
        t = true;
        break;
-     case 5:
+     case 4:
        Player.moveLeft();
        break;
     }
@@ -186,67 +186,75 @@ void input(int buttonNumber) {
 //смотрим состояние игры - рисуем соответсвующие элементы
 void output() {
   if (Field.getMenuTrigger()) {
-    LCD.clrScr();
-    LCD.print("NEW GAME", LEFT + 8, 0);
-    LCD.print("CONTINUE", LEFT + 8, 8);
-    LCD.print("DIFFICULTY", LEFT + 8, 16);
-    LCD.printNumI(Field.getDifficulty(), RIGHT, 16);
-    LCD.print("SIZE", LEFT + 8, 24);
-    LCD.printNumI(Field.getSizeField(), RIGHT, 24);
-    LCD.print("HIGHCORES", LEFT + 8, 32);
-    LCD.drawRect(0, 8 * Field.getMenuState(), 7, 8 * Field.getMenuState() + 6);
-    LCD.update();
+    display.setRotation(0);
+    display.clearDisplay();
+    display.setCursor(8,0);
+    display.println("NEW GAME");
+    display.setCursor(8,8);
+    display.println("CONTINUE");
+    display.setCursor(8,16);
+    display.println("DIFFICULTY");
+    display.setCursor(76,16);
+    display.println(Field.getDifficulty());
+    display.setCursor(8,24);
+    display.println("SIZE");
+    display.setCursor(76,24);
+    display.println(Field.getSizeField());
+    display.setCursor(8,32);
+    display.println("HIGHCORES");
+    display.drawRect(0, 8 * Field.getMenuState(), 7, 7, BLACK);
+    display.display();
   }
   else if (Field.getGameTrigger()) {
+    display.setRotation(1);
     sizeField = Field.getSizeField();
-    LCD.clrScr();
-    LCD.drawRect(0, 0, 11 * sizeField + 1, 18 * sizeField + 1);
-    for (int i = 0; i < sizeField; i++) {
-      for (int j = 0; j < sizeField; j++) {
-        LCD.setPixel(Player.getX() * sizeField + 1 + i, Player.getY() * sizeField + 1 + j);
-      }
-    }
+    display.clearDisplay();
+    display.drawRect(0, 0, 11 * sizeField + 2, 18 * sizeField + 2, BLACK);
+    display.fillRect(Player.getX() * sizeField + 1, Player.getY() * sizeField + 1, sizeField, sizeField, BLACK);
     for (int i = 0; i < height - 2; i++) {
       for (int j = 0; j < width - 2; j++) {
         if (Field.getDataRows(i, j)) {
-          for (int _i = 0; _i < sizeField; _i++) {
-            for (int _j = 0; _j < sizeField; _j++) {
-              LCD.setPixel(j * sizeField + 1 + _j, i * sizeField + 1 + _i);
-            }
-          }
+          display.drawRect(j * sizeField + 1, i * sizeField + 1, sizeField, sizeField, BLACK);
         }
       }
     }
     for (int i = 0; i < height - 2; i++) {
       if (Field.getDataShellsX(i) != -1) {
-        for (int _i = 0; _i < sizeField; _i++) {
-          for (int _j = 0; _j < sizeField; _j++) {
-            LCD.setPixel(Field.getDataShellsX(i) * sizeField + 1 + _i, Field.getDataShellsY(i) * sizeField + 1 + _j);
-          }
-        }
+        display.drawRect(Field.getDataShellsX(i) * sizeField + 1, Field.getDataShellsY(i) * sizeField + 1, sizeField, sizeField, BLACK);
       }
     }
-    
-    LCD.print("POINTS", RIGHT, 0);
-    LCD.printNumI(Field.getPoints(), RIGHT, 8);
-    LCD.update();
+
+    display.setCursor(36,0);
+    display.println("PT");
+    display.setCursor(36,8);
+    display.println(Field.getPoints());
+    display.display();
   }
   else if (Field.getLoseTrigger()) {
-    LCD.clrScr();
-    LCD.print("GAME OVER", CENTER, 0);
-    LCD.print("POINTS", CENTER, 8);
-    LCD.printNumI(Field.getPoints(), CENTER, 16);
-    LCD.print(String(Field.getName(0)) + String(Field.getName(1)) + String(Field.getName(2)), CENTER, 24);
-    LCD.drawLine(34 + Field.getLoseState() * 6, 32, 39 + Field.getLoseState() * 6, 32);
-    LCD.update();
+    display.setRotation(0);
+    display.clearDisplay();
+    display.setCursor(0,0);
+    display.println("GAME OVER");
+    display.setCursor(0,8);
+    display.println("POINTS");
+    display.setCursor(0,16);
+    display.println(Field.getPoints());
+    display.setCursor(0,24);
+    display.println(String(Field.getName(0)) + String(Field.getName(1)) + String(Field.getName(2)));
+    display.drawLine(Field.getLoseState() * 6, 32, 4 + Field.getLoseState() * 6, 32, BLACK);
+    display.display();
   }
   else if (Field.getTabTrigger()) {
-    LCD.clrScr();
-    LCD.print("HIGHCORES", CENTER, 0);
+    display.setRotation(0);
+    display.clearDisplay();
+    display.setCursor(14,0);
+    display.println("HIGHCORES");
     for (int i = 0; i < 5; i++) {
-      LCD.print(String(Field.getTabName1(i)) + String(Field.getTabName2(i)) + String(Field.getTabName3(i)), LEFT, (i + 1) * 8);
-      LCD.printNumI(Field.getTabPoints(i), RIGHT, (i + 1) * 8);
+      display.setCursor(0,(i + 1) * 8);
+      display.println(String(Field.getTabName1(i)) + String(Field.getTabName2(i)) + String(Field.getTabName3(i)));
+      display.setCursor(60,(i + 1) * 8);
+      display.println(Field.getTabPoints(i));
     }
-    LCD.update();
+    display.display();
   }
 }
