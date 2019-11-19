@@ -79,4 +79,5 @@ private:
   int tabPoints[5];
 
   bool t;
+  bool t1;
 };
