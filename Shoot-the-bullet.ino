@@ -24,6 +24,7 @@ const int height = 20;
 
 int sizeField;
 bool t = false;
+int mil;
 
 void setup() {
   pinMode(7, OUTPUT);
@@ -49,7 +50,6 @@ void setup() {
 
 void loop() {
 //ввод данных, если есть сигнал, то обрабатываем его
-  label:
   if (Field.getMenuTrigger()) {
     delay(200);
     for (int i = 2; i < 6; i++) {
@@ -69,15 +69,22 @@ void loop() {
         if (digitalRead(i) == LOW) {
           input(i);
           if (t) {
-            t = false;
-            goto label;
+            break;
           }
         }
+      }
+      if (t) {
+        break;
       }
       delay(200);
       Field.flightShells();
     }
-    Field.fallingRow();
+    if (!t) {
+      Field.fallingRow();
+    }
+    else {
+      t = false;
+    }
   }
   else if (Field.getLoseTrigger()) {
     delay(200);
