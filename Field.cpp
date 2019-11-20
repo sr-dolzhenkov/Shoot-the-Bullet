@@ -23,7 +23,7 @@ Field::Field() {
   tabTrigger = false;
   gameState = false;
 
-  sizeField = 2;
+  sizeField = 3;
   difficulty = 1;
 
   menuState = 0;
@@ -83,10 +83,7 @@ void Field::createRow() {
 
 //в нижний ряд записываем верхний(двигаемся с низу вверх), потом создаем строку на 1 ряду, а такжн проверяем не проирал ли игрок
 void Field::fallingRow() {
-  label1:
-  if (t1) {
-    goto label1;
-  }
+  while (t1) {}
   t = true;
   for (int i = height - 3; i > 0; i--) {
     for (int j = 0; j < width - 2; j++) {
@@ -116,10 +113,7 @@ bool Field::checkCollision(int _x, int _y) {
 
 //полёт осуществляется путём уменьшения координаты y, а также проверяем не было ди столкновения, иначе удаляем снаряд и добавляем блок в ряд, и проверяем не полный ли ряд, очищаем его
 void Field::flightShells() {
-  label:
-  if (t) {
-    goto label;
-  }
+  while (t) {}
   t1 = true;
   for (int i = 0; i < height - 2; i++) {
     if (dataShells[i][0] != -1) {
