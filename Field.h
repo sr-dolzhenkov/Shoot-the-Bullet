@@ -32,6 +32,8 @@ public:
   void minusLoseState();
   void saveTab();
   void reset();
+  void saveDifficulty();
+  void saveSize();
 
   const int getDataShellsX(int _i);
   const int getDataShellsY(int _i);
