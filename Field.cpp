@@ -23,9 +23,6 @@ Field::Field() {
   tabTrigger = false;
   gameState = false;
 
-  sizeField = 3;
-  difficulty = 1;
-
   menuState = 0;
   loseState = 0;
 
@@ -46,6 +43,20 @@ Field::Field() {
 
   t = false;
   t1 = false;
+
+  if ((EEPROM.read(21) > 0) && (EEPROM.read(21) < 4)) {
+    difficulty = EEPROM.read(21);
+  }
+  else {
+    difficulty = 1;
+  }
+
+  if ((EEPROM.read(22) > 0) && (EEPROM.read(22) < 4)) {
+    sizeField = EEPROM.read(22);
+  }
+  else {
+    sizeField = 3;
+  }
 }
 
 Field::~Field() {}
@@ -227,6 +238,7 @@ void Field::plusSizeField() {
   if (sizeField > 3) {
     sizeField = 1;
   }
+  saveSize();
 }
 
 void Field::plusDifficulty() {
@@ -234,6 +246,7 @@ void Field::plusDifficulty() {
    if (difficulty > 3) {
     difficulty = 1;
   }
+  saveDifficulty();
 }
 
 void Field::plusLoseState() {
@@ -302,15 +315,20 @@ void Field::saveTab() {
 }
 
 void Field::reset() {
-  for (int i = 0; i < 256; i++) {
-    EEPROM.write(i, false);
-  }
   for (int i = 0; i < 5; i++) {
     tabName[i][0] = 'A';
     tabName[i][1] = 'A';
     tabName[i][2] = 'A';
     tabPoints[i] = 0;
   }
+}
+
+void Field::saveDifficulty() {
+  EEPROM.write(21, difficulty);
+}
+
+void Field::saveSize() {
+  EEPROM.write(22, sizeField);
 }
 
 const int Field::getDataShellsX(int _i) {
