@@ -49,7 +49,7 @@ void setup() {
 
 
 void loop() {
-//ввод данных, если есть сигнал, то обрабатываем его
+//в соответсвии с состоянием игры вызываем методы для функционирования программы
   if (Field.getMenuTrigger()) {
     delay(200);
     for (int i = 2; i < 6; i++) {
@@ -60,8 +60,8 @@ void loop() {
     }
     output();
   }
-  //каждые 150 мс выввод данных и полёт снарядов
-  //каждые 4.5 с опускается ряды на первой сложности
+  //раз в 0.2 с. вызываем метод полёта снарядов 50 - уровень ложности * 5 раз
+  //потом вызываем метод падения срок, условия с t нужно для корректного выхода в меню во время игры
   else if (Field.getGameTrigger()) {
     for (int h = 0; h < 50 - Field.getDifficulty() * 5; h++) {
       output();
@@ -86,6 +86,7 @@ void loop() {
       t = false;
     }
   }
+  //поражение
   else if (Field.getLoseTrigger()) {
     delay(200);
     for (int i = 2; i < 6; i++) {
@@ -96,6 +97,7 @@ void loop() {
     output();
     delay(50);
   }
+  //таблица рекордов
   else if (Field.getTabTrigger()) {
     delay(200);
     for (int i = 2; i < 6; i++) {
@@ -107,7 +109,7 @@ void loop() {
     delay(50);
   }
 }
-//смотрим состояние игры - рисуем соответсвующие элементы
+//смотрим состояние игры - ативируем соотвествующие кнопки
 void input(int buttonNumber) {
   if (Field.getMenuTrigger()) {
     switch (buttonNumber){
