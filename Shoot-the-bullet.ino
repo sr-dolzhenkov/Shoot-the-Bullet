@@ -38,6 +38,8 @@ void setup() {
   digitalWrite(DOWN_PIN, HIGH);
   pinMode(LEFT_PIN, INPUT_PULLUP);
   digitalWrite(LEFT_PIN, HIGH);
+  
+  analogRead(A0);
 
   display.begin();
   display.setContrast(50);
