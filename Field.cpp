@@ -1,4 +1,3 @@
-#include <time.h>
 #include <EEPROM.h>
 
 #include "Field.h"
@@ -79,7 +78,6 @@ void Field::deleteShell(int pos) {
 
 //генерация происходит путём рандомизации, также проверяем не полная ли строка получилась, иначе делаём пропуск.
 void Field::createRow() {
-  srand(time(NULL));
   int t = 0;
   for (int j = 0; j < width - 2; j++) {
     dataRows[0][j] = random() % 2;
