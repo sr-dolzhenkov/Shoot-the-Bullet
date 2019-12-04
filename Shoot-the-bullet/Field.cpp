@@ -1,5 +1,5 @@
-#include <time.h>
 #include <EEPROM.h>
+#include <Arduino.h>
 
 #include "Field.h"
 
@@ -81,13 +81,13 @@ void Field::deleteShell(int pos) {
 void Field::createRow() {
   int t = 0;
   for (int j = 0; j < width - 2; j++) {
-    dataRows[0][j] = rand() % 2;
+    dataRows[0][j] = random() % 2;
     if (dataRows[0][j] == 1) {
       t++;
     }
   }
   if (t == width - 2) {
-    dataRows[0][rand() % 18] = false;
+    dataRows[0][random() % 18] = false;
   }
 }
 
