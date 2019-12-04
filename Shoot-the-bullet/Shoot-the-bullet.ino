@@ -39,7 +39,7 @@ void setup() {
   pinMode(LEFT_PIN, INPUT_PULLUP);
   digitalWrite(LEFT_PIN, HIGH);
   
-  srand(analogRead(A2));
+  randomSeed(analogRead(A2));
 
   display.begin();
   display.setContrast(50);
